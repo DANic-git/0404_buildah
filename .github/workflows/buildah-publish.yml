@@ -40,4 +40,4 @@ jobs:
         run: ./build.sh ${{ env.REGISTRY }}/${{ steps.string.outputs.lowercase }}:${{ github.ref_name }}
 
       - name: Publish
-        run: ./build.sh ${{ env.REGISTRY }}/${{ steps.string.outputs.lowercase }}:${{ github.ref_name }} ${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}
+        run: ./publish.sh ${{ env.REGISTRY }}/${{ steps.string.outputs.lowercase }}:${{ github.ref_name }} ${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}
