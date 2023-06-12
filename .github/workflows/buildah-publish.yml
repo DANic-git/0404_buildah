@@ -33,11 +33,11 @@ jobs:
         with:
           string: ${{ github.repository }}
 
-      - name: Checkout repository
+      - name: checkout
         uses: actions/checkout@v3
 
       - name: Build
-        run: ./build.sh ${{ env.REGISTRY }}/${{ steps.string.outputs.lowercase }}:${{ github.base_ref }}
+        run: ./build.sh ${{ env.REGISTRY }}/${{ steps.string.outputs.lowercase }}:${{ github.ref_name }}
 
       - name: Publish
-        run: ./build.sh ${{ env.REGISTRY }}/${{ steps.string.outputs.lowercase }}:${{ github.base_ref }} ${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}
+        run: ./build.sh ${{ env.REGISTRY }}/${{ steps.string.outputs.lowercase }}:${{ github.ref_name }} ${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}
