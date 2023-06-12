@@ -16,7 +16,8 @@ env:
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
   IMAGE_NAME: ${{ github.repository }}
-
+  REGISTRY_USER: ${{ github.actor }}
+  REGISTRY_PASSWORD: ${{ github.token }}
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -40,4 +41,4 @@ jobs:
         run: ./build.sh ${{ env.REGISTRY }}/${{ steps.string.outputs.lowercase }}:${{ github.ref_name }}
 
       - name: Publish
-        run: ./publish.sh ${{ env.REGISTRY }}/${{ steps.string.outputs.lowercase }}:${{ github.ref_name }} ${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}
+        run: ./publish.sh ${{ env.REGISTRY }}/${{ steps.string.outputs.lowercase }}:${{ github.ref_name }} ${{ env.REGISTRY_USER }}:${{ env.REGISTRY_PASSWORD }}
