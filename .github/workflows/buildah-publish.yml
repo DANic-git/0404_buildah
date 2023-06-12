@@ -28,11 +28,16 @@ jobs:
       id-token: write
 
     steps:
+      - id: string
+        uses: ASzc/change-string-case-action@v1
+        with:
+          string: ${{ github.repository }}
+
       - name: Checkout repository
         uses: actions/checkout@v3
 
       - name: Build
-        run: ./build.sh ${{ env.REGISTRY }}/${{ github.repository }}}:${{ github.base_ref }}
+        run: ./build.sh ${{ env.REGISTRY }}/${{ steps.string.outputs.lowercase }}:${{ github.base_ref }}
 
       - name: Publish
-        run: ./build.sh ${{ env.REGISTRY }}/${{ github.repository }}}:${{ github.base_ref }} ${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}
+        run: ./build.sh ${{ env.REGISTRY }}/${{ steps.string.outputs.lowercase }}:${{ github.base_ref }} ${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}
