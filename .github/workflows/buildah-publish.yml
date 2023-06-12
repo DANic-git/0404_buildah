@@ -43,4 +43,4 @@ jobs:
         run: ./build.sh ${{ env.REGISTRY }}/${{ steps.string.outputs.lowercase }}:${{ github.ref_name }}
 
       - name: Publish
-        run: ./publish.sh ${{ env.REGISTRY }}/${{ steps.string.outputs.lowercase }}:${{ github.ref_name }} ${{ env.REGISTRY_USER }}:${{ secrets.TOCEN }}
+        run: ./publish.sh ${{ env.REGISTRY }}/${{ steps.string.outputs.lowercase }}:${{ github.ref_name }} ${{ env.REGISTRY_USER }}:${{ secrets.GITHUB_TOKEN }}
