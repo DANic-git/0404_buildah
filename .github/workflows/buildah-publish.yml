@@ -43,7 +43,7 @@ jobs:
         with:
           username: ${{ env.REGISTRY_USER }}
           password: ${{ env.REGISTRY_PASSWORD }}
-          registry: ${{ env.IMAGE_REGISTRY }}
+          registry: ${{ env.REGISTRY }}/${{ steps.string.outputs.lowercase }}
 
       - name: Build
         id: build_image
@@ -56,7 +56,7 @@ jobs:
         uses: redhat-actions/push-to-registry@v2
         id: push
         with:
-          image: ${{ steps.build_image.outputs.image }}
+          image: ${{ steps.string.outputs.lowercase }}
           tags: ${{ github.ref_name }}
           registry: ${{ env.IMAGE_REGISTRY }}
           username: ${{ env.REGISTRY_USER }}
