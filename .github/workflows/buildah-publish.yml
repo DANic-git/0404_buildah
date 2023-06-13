@@ -1,65 +1,56 @@
-name: Buildah
-
+# This workflow will perform a test whenever there
+# is some change in code done to ensure that the changes
+# are not buggy and we are getting the desired output.
+name: Push to GHCR
 on:
-  schedule:
-    - cron: "23 18 * * *"
   push:
-    branches: ["master"]
-    # Publish semver tags as releases.
-    tags: ["v*.*.*"]
-  pull_request:
-    branches: ["master"]
   workflow_dispatch:
-
+  schedule:
+    - cron: "0 0 * * *" # every day at midnight
 env:
-  # Use docker.io for Docker Hub if empty
-  REGISTRY: ghcr.io
-  # github.repository as <account>/<repo>
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: ptr-test
+  IMAGE_TAGS: v1 ${{ github.sha }}
   IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
   REGISTRY_USER: ${{ github.actor }}
   REGISTRY_PASSWORD: ${{ github.token }}
+
 jobs:
-  build:
+  push-ghcr:
+    name: Build and push image
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-      # This is used to complete the identity challenge
-      # with sigstore/fulcio when running outside of PRs.
-      id-token: write
+    strategy:
+      fail-fast: false
+      matrix:
+        install_latest: [true, false]
 
     steps:
-      - id: repository_owner
-        uses: ASzc/change-string-case-action@v5
-        with:
-          string: ${{ github.repository_owner }}
+      # Checkout push-to-registry action github repository
+      - name: Checkout Push to Registry action
+        uses: actions/checkout@v2
 
-      - id: repository
-        uses: ASzc/change-string-case-action@v5
-        with:
-          string: ${{ github.repository }}
+      - name: Install latest podman
+        if: matrix.install_latest
+        run: |
+          bash .github/install_latest_podman.sh
 
-      - name: checkout
-        uses: actions/checkout@v3
-
-      - name: login to ghcr
-        uses: redhat-actions/podman-login@v1
-        with:
-          username: ${{ env.REGISTRY_USER }}
-          password: ${{ env.REGISTRY_PASSWORD }}
-          registry: ${{ env.REGISTRY }}
-
+      # Build image using Buildah action
       - name: Build
         id: build_image
-        run: ./build.sh ${{ steps.repository.outputs.lowercase }}:${{ github.ref_name }}
+        run: ./build.sh ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAGS }}
 
-      - name: push to ghcr
-        uses: redhat-actions/push-to-registry@v2
+      # Push the image to GHCR (Image Registry)
+      - name: Push To GHCR
+        uses: ./
         id: push
         with:
-          image: ${{ steps.repository.outputs.lowercase }}
-          tags: ${{ github.ref_name }}
-          registry: ${{ env.REGISTRY }}
+          image: ${{ env.IMAGE_NAME }}
+          tags: ${{ env.IMAGE_TAGS }}
+          registry: ${{ env.IMAGE_REGISTRY }}
           username: ${{ env.REGISTRY_USER }}
           password: ${{ env.REGISTRY_PASSWORD }}
+          extra-args: |
+            --disable-content-trust
+
+      - name: Echo outputs
+        run: |
+          echo "${{ toJSON(steps.push.outputs) }}"
