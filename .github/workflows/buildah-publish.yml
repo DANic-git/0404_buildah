@@ -47,7 +47,7 @@ jobs:
 
       - name: Build
         id: build_image
-        run: ./build.sh ${{ env.REGISTRY }}/${{ steps.string.outputs.lowercase }}:${{ github.ref_name }}
+        run: ./build.sh ${{ steps.string.outputs.lowercase }}:${{ github.ref_name }}
 
       # - name: Publish
       #   run: ./publish.sh ${{ env.REGISTRY }}/${{ steps.string.outputs.lowercase }}:${{ github.ref_name }} ${{ env.REGISTRY_USER }}:${{ secrets.TOKEN }}
@@ -56,7 +56,7 @@ jobs:
         uses: redhat-actions/push-to-registry@v2
         id: push
         with:
-          image: ${{ env.REGISTRY }}/${{ steps.string.outputs.lowercase }}
+          image: ${{ steps.string.outputs.lowercase }}
           tags: ${{ github.ref_name }}
           registry: ${{ env.REGISTRY }}
           username: ${{ env.REGISTRY_USER }}
