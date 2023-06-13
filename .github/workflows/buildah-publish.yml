@@ -52,13 +52,13 @@ jobs:
 
       - name: Build
         id: build_image
-        run: ./build.sh ${{ steps.repository.outputs.lowercase }}:${{ github.ref_name }}
+        run: ./build.sh "0404_buildah":${{ github.ref_name }}
 
       - name: push to ghcr
         uses: redhat-actions/push-to-registry@v2
         id: push
         with:
-          image: ${{ steps.repository.outputs.lowercase }}
+          image: "0404_buildah"
           tags: ${{ github.ref_name }}
           registry: ${{ env.REGISTRY }}/${{ steps.repository_owner.outputs.lowercase }}
           username: ${{ env.REGISTRY_USER }}
