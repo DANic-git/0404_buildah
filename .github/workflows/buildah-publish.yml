@@ -52,16 +52,13 @@ jobs:
 
       - name: Build
         id: build_image
-        run: ./build.sh ${{ steps.repository_owner.outputs.lowercase }}:${{ github.ref_name }}
-
-      # - name: Publish
-      #   run: ./publish.sh ${{ env.REGISTRY }}/${{ steps.string.outputs.lowercase }}:${{ github.ref_name }} ${{ env.REGISTRY_USER }}:${{ secrets.TOKEN }}
+        run: ./build.sh ${{ steps.repository.outputs.lowercase }}:${{ github.ref_name }}
 
       - name: push to ghcr
         uses: redhat-actions/push-to-registry@v2
         id: push
         with:
-          image: ${{ steps.repository_owner.outputs.lowercase }}
+          image: ${{ steps.repository.outputs.lowercase }}
           tags: ${{ github.ref_name }}
           registry: ${{ env.REGISTRY }}/${{ steps.repository_owner.outputs.lowercase }}
           username: ${{ env.REGISTRY_USER }}
